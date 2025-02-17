@@ -1,3 +1,21 @@
-# python_module_template
+## python_module_template
 
-A short description of the project.
+
+Installation:
+
+```bash
+pip install git+https://github.com/MatteoLacki/python_module_template_module.git
+```
+
+Usage:
+
+```bash
+create_python_module /tmp/test_module
+```
+
+More options:
+```bash
+create_python_module --help
+```
+
+
