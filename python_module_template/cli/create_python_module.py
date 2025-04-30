@@ -106,6 +106,7 @@ file_structures: dict[str, dict[str, str]] = dict(
     src={
         "{output}/src/{module_name}/__init__.py": "",
         "{output}/src/{module_name}/main.py": MAIN,
+        "{output}/src/{module_name}/cli/__init__.py": "",
         "{output}/src/{module_name}/cli/example_shell_script.py": EXAMPLE_SHELL_SCRIPT,
         "{output}/.gitignore": GITIGNORE,
         "{output}/__init__.py": "",
@@ -123,11 +124,6 @@ file_structures: dict[str, dict[str, str]] = dict(
 @click.argument("output", type=Path)
 @click.option("--dev_name", default="MatteoLacki", help="Name of the developer.")
 @click.option("--dev_email", default="matteo.lacki@gmail.com", help="Dev's Email")
-@click.option(
-    "--exist_ok",
-    help="Make it OK to write to an existing folder.",
-    is_flag=True,
-)
 @click.option(
     "--exist_ok",
     help="Make it OK to write to an existing folder.",
