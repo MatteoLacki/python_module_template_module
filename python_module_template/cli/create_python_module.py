@@ -78,7 +78,45 @@ reinstall-package = ["{module_name}"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 """
+
+PYTEST_STANDARD = """[pytest]
+python_files = {module_name}/*.py
+"""
+
+PYTEST_SRC = """[pytest]
+python_files = src/{module_name}/*.py
+"""
 # fmt: on
+
+file_structures: dict[str, dict[str, str]] = dict(
+    standard={
+        "{output}/tests/.keep": "",
+        "{output}/{module_name}/__init__.py": "",
+        "{output}/{module_name}/main.py": MAIN,
+        "{output}/{module_name}/cli/example_shell_script.py": EXAMPLE_SHELL_SCRIPT,
+        "{output}/.gitignore": GITIGNORE,
+        "{output}/__init__.py": "",
+        "{output}/LICENSE": LICENSE,
+        "{output}/MAKEFILE": MAKEFILE,
+        "{output}/MANIFEST.IN": MANIFEST,
+        "{output}/pyproject.toml": PYPROJECT,
+        "{output}/README.md": README,
+        "{output}/pytest.ini": PYTEST_STANDARD,
+    },
+    src={
+        "{output}/src/{module_name}/__init__.py": "",
+        "{output}/src/{module_name}/main.py": MAIN,
+        "{output}/src/{module_name}/cli/example_shell_script.py": EXAMPLE_SHELL_SCRIPT,
+        "{output}/.gitignore": GITIGNORE,
+        "{output}/__init__.py": "",
+        "{output}/LICENSE": LICENSE,
+        "{output}/MAKEFILE": MAKEFILE,
+        "{output}/MANIFEST.IN": MANIFEST,
+        "{output}/pyproject.toml": PYPROJECT,
+        "{output}/README.md": README,
+        "{output}/pytest.ini": PYTEST_SRC,
+    },
+)
 
 
 @click.command(context_settings={"show_default": True})
@@ -90,31 +128,33 @@ testpaths = ["tests"]
     help="Make it OK to write to an existing folder.",
     is_flag=True,
 )
+@click.option(
+    "--exist_ok",
+    help="Make it OK to write to an existing folder.",
+    is_flag=True,
+)
+@click.option(
+    "--file_structure",
+    type=click.Choice(file_structures, case_sensitive=False),
+    help="Choose a file structure.",
+    default="standard",
+    show_default=True,
+)
 def create_python_module(
     output,
     dev_name: str,
     dev_email: str,
     exist_ok: bool = False,
+    file_structure: str = "standard",
 ) -> None:
     module_name = output.name
     dev_git_server_name = dev_name
 
-    file_structure = {
-        output / "tests" / ".keep": "",
-        output / module_name / "__init__.py": "",
-        output / module_name / "main.py": MAIN,
-        output / module_name / "cli" / "example_shell_script.py": EXAMPLE_SHELL_SCRIPT,
-        output / ".gitignore": GITIGNORE,
-        output / "__init__.py": "",
-        output / "LICENSE": LICENSE,
-        output / "MAKEFILE": MAKEFILE,
-        output / "MANIFEST.IN": MANIFEST,
-        output / "pyproject.toml": PYPROJECT,
-        output / "README.md": README,
-    }
+    fs = file_structures[file_structure]
 
     output.mkdir(parents=True, exist_ok=exist_ok)
-    for path, content in file_structure.items():
+    for path, content in fs.items():
+        path = Path(path.format(**locals()))
         path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, "w") as file:
             file.write(content.format(**locals()))
