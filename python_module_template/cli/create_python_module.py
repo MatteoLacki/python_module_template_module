@@ -32,15 +32,20 @@ A short description of the project.
 """
 
 MAKEFILE = """make:
-    echo "Welcome to Project '{module_name}'"
+	echo "Welcome to Project '{module_name}'"
+
 upload_test_pypi:
-    rm -rf dist || True
-    python setup.py sdist
-    twine -r testpypi dist/* 
+	rm -rf dist || True
+	python setup.py sdist
+	twine -r testpypi dist/* 
+
 upload_pypi:
-    rm -rf dist || True
-    python setup.py sdist
-    twine upload dist/* 
+	rm -rf dist || True
+	python setup.py sdist
+	twine upload dist/* 
+
+ve_{module_name}:
+	python3 -m venv ve_{module_name}
 """
 
 MANIFEST = """include README.md
@@ -75,8 +80,17 @@ repository="https://github.com/{dev_git_server_name}/{module_name}.git"
 [tool.uv]
 reinstall-package = ["{module_name}"]
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
+# [tool.pytest.ini_options]
+# testpaths = ["tests"]
+"""
+
+PYPROJECT_SRC = PYPROJECT + """
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+{module_name} = ["data/*.csv"]
 """
 
 PYTEST_STANDARD = """[pytest]
@@ -85,6 +99,22 @@ python_files = {module_name}/*.py
 
 PYTEST_SRC = """[pytest]
 python_files = src/{module_name}/*.py
+"""
+
+TEST_CSV = """A,B
+1,2
+3,4
+"""
+
+OPEN_DATA_EXAMPLE = """import csv
+from importlib.resources import files
+
+def open_data():
+    data_path = files("{module_name}.data").joinpath("test_data.csv")
+    with open(data_path, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            print(row)
 """
 # fmt: on
 
@@ -97,7 +127,7 @@ file_structures: dict[str, dict[str, str]] = dict(
         "{output}/.gitignore": GITIGNORE,
         "{output}/__init__.py": "",
         "{output}/LICENSE": LICENSE,
-        "{output}/MAKEFILE": MAKEFILE,
+        "{output}/Makefile": MAKEFILE,
         "{output}/MANIFEST.IN": MANIFEST,
         "{output}/pyproject.toml": PYPROJECT,
         "{output}/README.md": README,
@@ -108,12 +138,15 @@ file_structures: dict[str, dict[str, str]] = dict(
         "{output}/src/{module_name}/main.py": MAIN,
         "{output}/src/{module_name}/cli/__init__.py": "",
         "{output}/src/{module_name}/cli/example_shell_script.py": EXAMPLE_SHELL_SCRIPT,
+        "{output}/src/{module_name}/data/__init__.py": "",
+        "{output}/src/{module_name}/data/test_data.csv": TEST_CSV,
+        "{output}/src/{module_name}/get_data_in_project_example.py": OPEN_DATA_EXAMPLE,
         "{output}/.gitignore": GITIGNORE,
         "{output}/__init__.py": "",
         "{output}/LICENSE": LICENSE,
-        "{output}/MAKEFILE": MAKEFILE,
+        "{output}/Makefile": MAKEFILE,
         "{output}/MANIFEST.IN": MANIFEST,
-        "{output}/pyproject.toml": PYPROJECT,
+        "{output}/pyproject.toml": PYPROJECT_SRC,
         "{output}/README.md": README,
         "{output}/pytest.ini": PYTEST_SRC,
     },
