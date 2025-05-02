@@ -32,20 +32,20 @@ A short description of the project.
 """
 
 MAKEFILE = """make:
-	echo "Welcome to Project '{module_name}'"
+    echo "Welcome to Project '{module_name}'"
 
 upload_test_pypi:
-	rm -rf dist || True
-	python setup.py sdist
-	twine -r testpypi dist/* 
+    twine check dist/*
+    python -m pip install --upgrade twine
+    twine upload --repository testpypi dist/*
 
 upload_pypi:
-	rm -rf dist || True
-	python setup.py sdist
-	twine upload dist/* 
+    twine check dist/*
+    python -m pip install --upgrade twine
+    twine upload dist/* 
 
 ve_{module_name}:
-	python3 -m venv ve_{module_name}
+    python3 -m venv ve_{module_name}
 """
 
 MANIFEST = """include README.md
@@ -68,6 +68,12 @@ dependencies = [
     "click",
 ]
 requires-python = ">=3.6"
+
+[project.optional-dependencies]
+dev = [
+    "twine",
+    "pytest",
+]
 
 
 [project.scripts]
