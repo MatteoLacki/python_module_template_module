@@ -64,16 +64,16 @@ readme="README.md"
 authors=[
     {{name="{dev_name}",email="{dev_email}"}},
 ]
-dependencies = [
-    "click",
-]
 requires-python = ">=3.6"
+# dependencies = [
+#     "click",
+# ]
 
-[project.optional-dependencies]
-dev = [
-    "twine",
-    "pytest",
-]
+# [project.optional-dependencies]
+# dev = [
+#     "twine",
+#     "pytest",
+# ]
 
 
 [project.scripts]
@@ -95,8 +95,11 @@ PYPROJECT_SRC = PYPROJECT + """
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.setuptools.package-data]
-{module_name} = ["data/*.csv"]
+# [tool.setuptools]
+# include-package-data = true
+
+# [tool.setuptools.package-data]
+# {module_name} = ["data/*.csv"]
 """
 
 PYTEST_STANDARD = """[pytest]
@@ -148,10 +151,8 @@ file_structures: dict[str, dict[str, str]] = dict(
         "{output}/src/{module_name}/data/test_data.csv": TEST_CSV,
         "{output}/src/{module_name}/get_data_in_project_example.py": OPEN_DATA_EXAMPLE,
         "{output}/.gitignore": GITIGNORE,
-        "{output}/__init__.py": "",
         "{output}/LICENSE": LICENSE,
         "{output}/Makefile": MAKEFILE,
-        "{output}/MANIFEST.IN": MANIFEST,
         "{output}/pyproject.toml": PYPROJECT_SRC,
         "{output}/README.md": README,
         "{output}/pytest.ini": PYTEST_SRC,
@@ -172,7 +173,7 @@ file_structures: dict[str, dict[str, str]] = dict(
     "--file_structure",
     type=click.Choice(file_structures, case_sensitive=False),
     help="Choose a file structure.",
-    default="standard",
+    default="src",
     show_default=True,
 )
 def create_python_module(
@@ -180,7 +181,7 @@ def create_python_module(
     dev_name: str,
     dev_email: str,
     exist_ok: bool = False,
-    file_structure: str = "standard",
+    file_structure: str = "src",
 ) -> None:
     module_name = output.name
     dev_git_server_name = dev_name
